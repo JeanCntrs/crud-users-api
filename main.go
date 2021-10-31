@@ -25,6 +25,22 @@ func main() {
 		json.NewEncoder(w).Encode("GET Method")
 	}).Methods(GET)
 
+	router.HandleFunc("/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id, found := mux.Vars(r)["id"]
+
+		if found {
+			message := "ID found: " + id
+
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(message)
+
+			return
+		}
+
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(nil)
+	}).Methods(GET)
+
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode("POST Method")
 	}).Methods(POST)
