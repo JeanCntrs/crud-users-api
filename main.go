@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	fmt.Println("Starting server... ")
+	fmt.Println("Starting server...")
 
 	handlerGeneral := handlers.NewHandlerGeneral()
 	router := mux.NewRouter()
