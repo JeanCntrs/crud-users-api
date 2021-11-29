@@ -1,9 +1,9 @@
-package models
+package entities
 
 type User struct {
-	In      int
+	Id      int
 	Name    string
 	Surname string
-	Age     string
+	Age     int
 	Active  bool
 }
