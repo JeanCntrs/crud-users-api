@@ -13,10 +13,11 @@ import (
 func main() {
 	fmt.Println("Starting server...")
 
-	handlerGeneral := handlers.NewUserController()
+	userController := handlers.NewUserController()
 	router := mux.NewRouter()
-	router.HandleFunc("/", handlerGeneral.HandleGeneral)
-	router.HandleFunc("/{id}", handlerGeneral.HandleOne)
+
+	router.HandleFunc("/", userController.HandleGeneral)
+	router.HandleFunc("/{id}", userController.HandleOne)
 
 	server := http.Server{
 		Addr:              ":8080",

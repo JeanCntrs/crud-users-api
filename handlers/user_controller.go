@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/JeanCntrs/api-intermediate-level/entities"
 	"github.com/JeanCntrs/api-intermediate-level/services"
 	"github.com/gorilla/mux"
 )
@@ -21,24 +22,28 @@ type UserController interface {
 }
 
 type userController struct {
-	services.UserService
+	service services.UserService
 }
 
 func NewUserController() UserController {
-	return userController{}
+	return &userController{service: services.NewUserService()}
 }
 
-func (uc userController) HandleGeneral(w http.ResponseWriter, r *http.Request) {
+func (uc *userController) HandleGeneral(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	if r.Method == GET {
-		json.NewEncoder(w).Encode("GET Method")
+		users := uc.service.FindAll()
+		json.NewEncoder(w).Encode(users)
 	}
 
 	if r.Method == POST {
-		json.NewEncoder(w).Encode("POST Method")
-	}
+		user := entities.User{}
+		json.NewDecoder(r.Body).Decode(&user)
 
-	if r.Method == PUT {
-		json.NewEncoder(w).Encode("PUT Method")
+		uc.service.Create(user)
+		json.NewEncoder(w).Encode(user)
 	}
 
 	if r.Method == DELETE {
@@ -46,20 +51,49 @@ func (uc userController) HandleGeneral(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (uc userController) HandleOne(w http.ResponseWriter, r *http.Request) {
+func (uc *userController) HandleOne(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	if r.Method == GET {
 		id, found := mux.Vars(r)["id"]
 
 		if found {
-			message := "ID found: " + id
+			user, err := uc.service.FindOne(id)
+
+			if err != nil {
+				w.WriteHeader(http.StatusNotFound)
+				json.NewEncoder(w).Encode(err.Error())
+
+				return
+			}
 
 			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(message)
+			json.NewEncoder(w).Encode(user)
 
 			return
 		}
 
 		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(nil)
+	}
+
+	if r.Method == PUT {
+		id, found := mux.Vars(r)["id"]
+
+		if found {
+			user := entities.User{}
+			json.NewDecoder(r.Body).Decode(&user)
+
+			userUpdated := uc.service.Update(id, user)
+
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(userUpdated)
+
+			return
+		}
+
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode("user not updated")
 	}
 }
