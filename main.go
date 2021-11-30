@@ -13,7 +13,7 @@ import (
 func main() {
 	fmt.Println("Starting server...")
 
-	handlerGeneral := handlers.NewHandlerGeneral()
+	handlerGeneral := handlers.NewUserController()
 	router := mux.NewRouter()
 	router.HandleFunc("/", handlerGeneral.HandleGeneral)
 	router.HandleFunc("/{id}", handlerGeneral.HandleOne)

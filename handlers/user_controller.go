@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/JeanCntrs/api-intermediate-level/services"
 	"github.com/gorilla/mux"
 )
 
@@ -14,18 +15,20 @@ const (
 	DELETE string = "DELETE"
 )
 
-type InterfaceGeneral interface {
+type UserController interface {
 	HandleGeneral(w http.ResponseWriter, r *http.Request)
 	HandleOne(w http.ResponseWriter, r *http.Request)
 }
 
-type HandlerGeneral struct{}
-
-func NewHandlerGeneral() InterfaceGeneral {
-	return HandlerGeneral{}
+type userController struct {
+	services.UserService
 }
 
-func (hg HandlerGeneral) HandleGeneral(w http.ResponseWriter, r *http.Request) {
+func NewUserController() UserController {
+	return userController{}
+}
+
+func (uc userController) HandleGeneral(w http.ResponseWriter, r *http.Request) {
 	if r.Method == GET {
 		json.NewEncoder(w).Encode("GET Method")
 	}
@@ -43,7 +46,7 @@ func (hg HandlerGeneral) HandleGeneral(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (hg HandlerGeneral) HandleOne(w http.ResponseWriter, r *http.Request) {
+func (uc userController) HandleOne(w http.ResponseWriter, r *http.Request) {
 	if r.Method == GET {
 		id, found := mux.Vars(r)["id"]
 

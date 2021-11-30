@@ -45,7 +45,7 @@ func NewUserRepository() UserRepository {
 
 	users := []entities.User{user1, user2, user3}
 
-	return userRepository{users: users}
+	return &userRepository{users: users}
 }
 
 func (ur *userRepository) FindAll() []entities.User {
@@ -61,13 +61,27 @@ func (ur *userRepository) FindOne(id string) (entities.User, error) {
 		}
 	}
 
-	return entities.User{}, errors.New("User not found.")
+	return entities.User{}, errors.New("user not found")
 }
 
-func (ur *userRepository) Create(entities.User) entities.User {
-
+func (ur *userRepository) Create(user entities.User) entities.User {
+	ur.users = append(ur.users, user)
+	return user
 }
 
 func (ur *userRepository) Update(id string, user entities.User) entities.User {
+	convId, _ := strconv.Atoi(id)
+	finalUser := []entities.User{}
 
+	for _, originalUser := range ur.users {
+		if convId == user.Id {
+			finalUser = append(finalUser, user)
+		} else {
+			finalUser = append(finalUser, originalUser)
+		}
+	}
+
+	ur.users = finalUser
+
+	return user
 }
