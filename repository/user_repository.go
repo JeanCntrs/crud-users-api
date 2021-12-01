@@ -12,6 +12,7 @@ type UserRepository interface {
 	FindOne(id string) (entities.User, error)
 	Create(entities.User) entities.User
 	Update(id string, user entities.User) entities.User
+	Delete(id string) string
 }
 
 type userRepository struct {
@@ -71,17 +72,30 @@ func (ur *userRepository) Create(user entities.User) entities.User {
 
 func (ur *userRepository) Update(id string, user entities.User) entities.User {
 	convId, _ := strconv.Atoi(id)
-	finalUser := []entities.User{}
+	finalUsers := []entities.User{}
 
 	for _, originalUser := range ur.users {
-		if convId == user.Id {
-			finalUser = append(finalUser, user)
+		if convId == originalUser.Id {
+			finalUsers = append(finalUsers, user)
 		} else {
-			finalUser = append(finalUser, originalUser)
+			finalUsers = append(finalUsers, originalUser)
 		}
 	}
 
-	ur.users = finalUser
+	ur.users = finalUsers
 
 	return user
+}
+
+func (ur *userRepository) Delete(id string) string {
+	convId, _ := strconv.Atoi(id)
+
+	for index, originalUser := range ur.users {
+		if convId == originalUser.Id {
+			ur.users = append(ur.users[:index], ur.users[index+1:]...)
+			return "user deleted"
+		}
+	}
+
+	return "user not found"
 }

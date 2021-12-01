@@ -10,6 +10,7 @@ type UserService interface {
 	FindOne(id string) (entities.User, error)
 	Create(entities.User) entities.User
 	Update(id string, user entities.User) entities.User
+	Delete(id string) string
 }
 
 type userService struct {
@@ -34,4 +35,8 @@ func (us *userService) Create(user entities.User) entities.User {
 
 func (us *userService) Update(id string, user entities.User) entities.User {
 	return us.repository.Update(id, user)
+}
+
+func (us *userService) Delete(id string) string {
+	return us.repository.Delete(id)
 }

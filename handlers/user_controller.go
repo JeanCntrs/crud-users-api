@@ -45,10 +45,6 @@ func (uc *userController) HandleGeneral(w http.ResponseWriter, r *http.Request) 
 		uc.service.Create(user)
 		json.NewEncoder(w).Encode(user)
 	}
-
-	if r.Method == DELETE {
-		json.NewEncoder(w).Encode("DELETE Method")
-	}
 }
 
 func (uc *userController) HandleOne(w http.ResponseWriter, r *http.Request) {
@@ -95,5 +91,19 @@ func (uc *userController) HandleOne(w http.ResponseWriter, r *http.Request) {
 
 		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode("user not updated")
+	}
+
+	if r.Method == DELETE {
+		id, found := mux.Vars(r)["id"]
+
+		if found {
+
+			response := uc.service.Delete(id)
+
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(response)
+
+			return
+		}
 	}
 }
